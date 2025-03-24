@@ -7,7 +7,6 @@ namespace ToDoList.Context
     {
         public TodoListDBContext(DbContextOptions<TodoListDBContext> db): base(db)
         {}
-
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Tareas> Tareas { get; set; }
     }

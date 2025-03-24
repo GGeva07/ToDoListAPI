@@ -7,9 +7,7 @@ namespace ToDoList.Models
     {
         [Key]
         public int id { get; set; }
-
         public string Nombre { get; set; }
-
         public string  Contenido { get; set; }
 
         [Required]
@@ -18,6 +16,5 @@ namespace ToDoList.Models
         [ForeignKey("Usuario")]
         public int idUsuario { get; set; }
         public Usuario? Usuario { get; set;  }
-
     }
 }

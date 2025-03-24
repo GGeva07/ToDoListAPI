@@ -14,7 +14,7 @@ namespace ToDoList.Services
             this.context = context;
         }
 
-        public string DeleteUsuario(int id)
+        public string Delete(int id)
         {
             var registro = context.Usuario.Find(id);
             context.Usuario.Remove(registro);
@@ -22,19 +22,19 @@ namespace ToDoList.Services
             return "Registro Eliminado";
         }
 
-        public List<Usuario> Getusuarios()
+        public List<Usuario> Get()
         {
             return context.Usuario.ToList();
         }
 
-        public string SetUsuario(Usuario model)
+        public string Set(Usuario model)
         {
             context.Usuario.Add(model);
             context.SaveChanges();
             return "Regsitro insertado";
         }
 
-        public string UpdateUsuario(Usuario model)
+        public string Update(Usuario model)
         {
             context.Entry(model).State = EntityState.Modified;
             context.SaveChanges();

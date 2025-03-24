@@ -21,25 +21,25 @@ namespace ToDoList.Controllers
         [HttpGet ("Get-Usuarios")]
         public List<Usuario> GetUsuarios()
         {
-            return service.Getusuarios();
+            return service.Get();
         }
 
         [HttpPost ("Set-Usuario")]
         public string SetUsuario(Usuario model)
         {
-            return service.SetUsuario(model);
+            return service.Set(model);
         }
 
         [HttpPut ("Update-Usuario")]
         public string UpdateUsuario(Usuario model)
         {
-            return service.UpdateUsuario(model);
+            return service.Update(model);
         }
 
         [HttpDelete ("Delete-Usuario")]
         public string DeleteUsuario(int id)
         {
-            return service.DeleteUsuario(id);
+            return service.Delete(id);
         }
     }
 }

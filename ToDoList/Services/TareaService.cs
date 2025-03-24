@@ -5,7 +5,7 @@ using ToDoList.Models;
 
 namespace ToDoList.Services
 {
-    public class TareaService : ITarea
+    public class TareaService : ITareas
     {
         private readonly TodoListDBContext context;
 
@@ -14,7 +14,7 @@ namespace ToDoList.Services
             this.context = context;
         }
 
-        public string DeleteTarea(int id)
+        public string Delete(int id)
         {
             var registro = context.Tareas.Find(id);
             context.Tareas.Remove(registro);
@@ -22,22 +22,28 @@ namespace ToDoList.Services
             return "Regsitro Eliminado";
         }
 
-        public List<Tareas> GetTarea()
+        public List<Tareas> Get()
         {
 
             var data = context.Tareas.ToList();
-            Console.WriteLine(data);
             return data;
         }
 
-        public string SetTarea(Tareas model)
+        public Tareas? GetTareasByNombre(string Nombre)
+        {
+            var tarea1 = Get();
+            var tarea = tarea1.Find(tarea => tarea.Nombre == Nombre);
+            return tarea;
+        }
+
+        public string Set(Tareas model)
         {
             context.Tareas.Add(model);
             context.SaveChanges();
             return "Registro insertado";
         }
 
-        public string UpdateTarea(Tareas model)
+        public string Update(Tareas model)
         {
             context.Entry(model).State = EntityState.Modified;
             context.SaveChanges();

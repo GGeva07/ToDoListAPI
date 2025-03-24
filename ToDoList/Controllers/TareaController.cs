@@ -8,34 +8,40 @@ namespace ToDoList.Controllers
     [ApiController]
     public class TareaController
     {
-        private readonly ITarea service;
+        private readonly ITareas service;
 
-        public TareaController(ITarea service)
+        public TareaController(ITareas service)
         {
             this.service = service;
         }
         [HttpGet("Get-Tareas")]
         public List<Tareas> GetTareas()
         {
-            return service.GetTarea();
+            return service.Get();
+        }
+
+        [HttpGet("Get-TareaByTitle{Nombre}")]
+        public Tareas? GetTareaByNombre(string Nombre)
+        {
+            return service.GetTareasByNombre(Nombre);
         }
 
         [HttpPost("Set-Tarea")]
         public string SetTarea(Tareas model)
         {
-            return service.SetTarea(model);
+            return service.Set(model);
         }
 
         [HttpPut("Update-Tarea")]
-        public string UpdateUsuario(Tareas model)
+        public string UpdateTareas(Tareas model)
         {
-            return service.UpdateTarea(model);
+            return service.Update(model);
         }
 
-        [HttpDelete("Delete-Tarea")]
+        [HttpDelete("{id}")]
         public string DeleteTarea(int id)
         {
-            return service.DeleteTarea(id);
+            return service.Delete(id);
         }
     }
 }

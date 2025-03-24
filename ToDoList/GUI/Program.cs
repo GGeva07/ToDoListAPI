@@ -3,7 +3,7 @@ using ToDoList.Context;
 using ToDoList.Interfaces;
 using ToDoList.Services;
 
-namespace ToDoList
+namespace ToDoList.GUI
 {
     public class Program
     {
@@ -19,7 +19,7 @@ namespace ToDoList
             builder.Services.AddSwaggerGen();
             builder.Services.AddSqlServer<TodoListDBContext>(builder.Configuration.GetConnectionString("AppConnection"));
             builder.Services.AddScoped<IUsuario, UsuarioService>();
-            builder.Services.AddScoped<ITarea, TareaService>();
+            builder.Services.AddScoped<ITareas, TareaService>();
 
             var app = builder.Build();
 
