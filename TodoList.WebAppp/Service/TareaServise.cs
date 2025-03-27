@@ -1,5 +1,4 @@
-﻿using ToDoList.Web.Models;
-using ToDoList.Web.Models.Tarea;
+﻿using TodoList.WebAppp.Models;
 
 namespace ToDoList.Web.Service
 {
@@ -16,15 +15,15 @@ namespace ToDoList.Web.Service
             };
         }
 
-        public async Task<List<TareaModel>> GetTasksAsync()
+        public async Task<List<TareaModelsView>> GetTasksAsync()
         {
             try
             {
                 var response = await _httpClient.GetAsync("Tarea/Get-Tareas");
                 response.EnsureSuccessStatusCode();
 
-                var tasks = await response.Content.ReadFromJsonAsync<List<TareaModel>>();
-                return tasks ?? new List<TareaModel>();
+                var tasks = await response.Content.ReadFromJsonAsync<List<TareaModelsView>>();
+                return tasks ?? new List<TareaModelsView>();
             }
             catch (Exception ex)
             {
@@ -32,14 +31,14 @@ namespace ToDoList.Web.Service
             }
         }
 
-        public async Task<TareaModel> GetTaskByTitleAsync(string title)
+        public async Task<TareaModelsView> GetTaskByTitleAsync(string title)
         {
             try
             {
                 var response = await _httpClient.GetAsync($"Tarea/Get-TareaByTitle{Uri.EscapeDataString(title)}");
                 response.EnsureSuccessStatusCode();
 
-                var task = await response.Content.ReadFromJsonAsync<TareaModel>();
+                var task = await response.Content.ReadFromJsonAsync<TareaModelsView>();
                 return task ?? throw new Exception("Task not found");
             }
             catch (Exception ex)
@@ -48,7 +47,7 @@ namespace ToDoList.Web.Service
             }
         }
 
-        public async Task<OperationResult> CreateTaskAsync(TareaModel task)
+        public async Task<OperationResult> CreateTaskAsync(ModelCreate task)
         {
             try
             {
@@ -68,7 +67,7 @@ namespace ToDoList.Web.Service
             }
         }
 
-        public async Task<OperationResult> UpdateTaskAsync(TareaModel task)
+        public async Task<OperationResult> UpdateTaskAsync(TareaModelsView task)
         {
             try
             {

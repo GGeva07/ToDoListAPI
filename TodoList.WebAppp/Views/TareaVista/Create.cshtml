@@ -1,4 +1,4 @@
-﻿@model ToDoList.Web.Models.Tarea.TareaModel
+﻿@model TodoList.WebAppp.Models.TareaModelsView
 
 @{
     ViewData["Title"] = "Create";
@@ -6,12 +6,17 @@
 
 <h1>Create</h1>
 
-<h4>TareaModel</h4>
+<h4>TareaModelsView</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="id" class="control-label"></label>
+                <input asp-for="id" class="form-control" />
+                <span asp-validation-for="id" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Nombre" class="control-label"></label>
                 <input asp-for="Nombre" class="form-control" />
@@ -27,9 +32,9 @@
                 <input asp-for="Estado" class="form-control" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
-            <div class="form-group hidden">
+            <div class="form-group">
                 <label asp-for="idUsuario" class="control-label"></label>
-                <input asp-for="idUsuario" value ="1" class="form-control" />
+                <input asp-for="idUsuario" class="form-control" />
                 <span asp-validation-for="idUsuario" class="text-danger"></span>
             </div>
             <div class="form-group">

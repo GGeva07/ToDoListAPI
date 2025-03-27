@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ToDoList.Web.Models.Tarea;
+using System.Threading.Tasks;
+using TodoList.WebAppp.Models;
 using ToDoList.Web.Service;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ToDoList.Web.Controllers
 {
-    public class TareaController : Controller
+    public class TareaVistaController : Controller
     {
         private readonly TareaService _TareaService;
 
-        public TareaController()
+        public TareaVistaController()
         {
             _TareaService = new TareaService();
         }
@@ -25,7 +26,7 @@ namespace ToDoList.Web.Controllers
             catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
-                return View(new List<TareaModel>());
+                return View(new List<TareaModelsView>());
             }
         }
 
@@ -39,18 +40,40 @@ namespace ToDoList.Web.Controllers
             catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
-                return View(new TareaModel());
+                return View(new TareaModelsView());
             }
         }
 
-        public ActionResult Create()
+        public async Task<ActionResult> Create(TareaModelsView model)
         {
-            return View();
+            TareaModelsView modelInternal = new TareaModelsView();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:7138/api/");
+                var responce = await client.GetAsync("Set-Tarea");
+                modelInternal = await responce.Content.ReadFromJsonAsync<TareaModelsView>();
+                if (!responce.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+
+                }
+
+                var entity = new ModelCreate()
+                {
+                    Nombre = modelInternal.Nombre,
+                    Contenido = modelInternal.Contenido,
+                    Estado = modelInternal.Estado,
+                    idUsuario = modelInternal.idUsuario
+                };
+
+                return View(modelInternal);
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TareaModel model)
+        public async Task<IActionResult> Create(ModelCreate model)
         {
             try
             {
@@ -80,13 +103,13 @@ namespace ToDoList.Web.Controllers
             catch (Exception ex)
             {
                 ViewBag.Message = ex.Message;
-                return View(new TareaModel());
+                return View(new TareaModelsView());
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(TareaModel model)
+        public async Task<IActionResult> Edit(TareaModelsView model)
         {
             try
             {

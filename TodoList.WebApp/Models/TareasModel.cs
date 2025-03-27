@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace ToDoList.Web.Models.Tarea
+namespace TodoList.WebApp.Models
 {
-    public class TareaModel
+    public class TareasModel
     {
-        public int? id { get; set; }
+        public int id { get; set; }
         public string Nombre { get; set; }
         public string Contenido { get; set; }
         public string Estado { get; set; }
-        public int idUsuario { get; set; }
     }
 }
