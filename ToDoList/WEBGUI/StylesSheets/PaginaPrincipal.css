@@ -1,0 +1,17 @@
+nav{
+  width: auto;
+  font-weight: bold;    
+  height: 50px;
+  background-color: cadetblue!important;
+  color: antiquewhite;
+
+}
+
+nav > a{
+    
+}
+
+body{
+    background-color: rgb(141, 189, 190)!important;
+}
+
