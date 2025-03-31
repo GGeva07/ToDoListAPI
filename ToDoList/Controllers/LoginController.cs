@@ -22,7 +22,7 @@ namespace ToDoList.Controllers
             if(usuario == null)
                 return Unauthorized(new { message = "Credenciales incorrectas" });
 
-            var token = service.GenerateJwtToken(usuario);
+            var token = service.GenerarToken(usuario);
             return Ok(new { token });
         }
     }

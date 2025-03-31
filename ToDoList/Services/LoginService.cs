@@ -42,23 +42,23 @@ namespace ToDoList.Services
             }
         }
 
-        public string GenerateJwtToken(Usuario usuario)
+        public async Task<string> GenerarToken(Usuario usuario)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuracion["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var codigo = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuracion["Jwt:Key"]));
+            var credenciales = new SigningCredentials(codigo, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-            new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString()),
-            new Claim(ClaimTypes.Email, usuario.Correo)
-        };
+               new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString()),
+               new Claim(ClaimTypes.Email, usuario.Correo)
+            };
 
             var token = new JwtSecurityToken(
                 configuracion["Jwt:Issuer"],
                 configuracion["Jwt:Audience"],
                 claims,
                 expires: DateTime.Now.AddHours(2),
-                signingCredentials: credentials);
+                signingCredentials: credenciales);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
