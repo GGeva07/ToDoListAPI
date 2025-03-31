@@ -19,8 +19,5 @@ namespace ToDoList.Models
 
         [Required]
         public string Contrasenia { get; set; }
-
-        public List<Tareas>? ListadeTareas { get; set; }
-
     }
 }

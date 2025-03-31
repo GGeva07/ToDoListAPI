@@ -15,6 +15,5 @@ namespace ToDoList.Models
 
         [ForeignKey("Usuario")]
         public int idUsuario { get; set; }
-        public Usuario? Usuario { get; set;  }
     }
 }

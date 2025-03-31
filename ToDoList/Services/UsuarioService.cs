@@ -2,6 +2,11 @@
 using ToDoList.Interfaces;
 using ToDoList.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ToDoList.Services
 {
@@ -9,36 +14,91 @@ namespace ToDoList.Services
     {
         private readonly TodoListDBContext context;
 
+
         public UsuarioService(TodoListDBContext context)
         {
             this.context = context;
         }
 
-        public string Delete(int id)
+        public async Task<List<Usuario>> Get()
         {
-            var registro = context.Usuario.Find(id);
-            context.Usuario.Remove(registro);
-            context.SaveChanges();
-            return "Registro Eliminado";
+            try
+            {
+                var usuarios = await context.Usuario.ToListAsync();
+                return usuarios;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return new List<Usuario>();
+            }
         }
 
-        public List<Usuario> Get()
+        public async Task<string> Post(Usuario model)
         {
-            return context.Usuario.ToList();
+            try
+            {
+                await context.Usuario.AddAsync(model);
+                await context.SaveChangesAsync();
+                return "Registro insertado correctamente";
+            }
+            catch (Exception e)
+            {
+                return $"Error al insertar el registro: {e.Message}";
+            }
         }
 
-        public string Set(Usuario model)
+        public async Task<string> Put(int id, Usuario model)
         {
-            context.Usuario.Add(model);
-            context.SaveChanges();
-            return "Regsitro insertado";
+            try
+            {
+                var usuario = await context.Usuario
+                    .FirstOrDefaultAsync(user => user.id == id);
+
+                if (usuario == null)
+                {
+                    return "Usuario no encontrado";
+                }
+
+                // Actualizamos los valores del usuario
+                usuario.Nombre = model.Nombre;
+                usuario.Correo = model.Correo;
+                usuario.Contrasenia = model.Contrasenia;
+
+                await context.SaveChangesAsync();
+                return "Registro actualizado correctamente";
+            }
+            catch (Exception e)
+            {
+                return $"Error al actualizar el registro: {e.Message}";
+            }
         }
 
-        public string Update(Usuario model)
+        public async Task<string> Delete(int id)
         {
-            context.Entry(model).State = EntityState.Modified;
-            context.SaveChanges();
-            return "Registro Actualizado";
+            try
+            {
+                var usuario = await context.Usuario
+                    .FirstOrDefaultAsync(u => u.id == id);
+
+                if (usuario == null)
+                {
+                    return "Usuario no encontrado";
+                }
+
+                var tareasBorrar = await context.Tareas
+                    .Where(t => t.idUsuario == id)
+                    .ToListAsync();
+
+                context.Tareas.RemoveRange(tareasBorrar);
+                context.Usuario.Remove(usuario);
+                await context.SaveChangesAsync();
+                return "Usuario y tareas pertenecientes a este eliminados correctamente";
+            }
+            catch (Exception e)
+            {
+                return $"Error al eliminar el usuario: {e.Message}";
+            }
         }
     }
 }

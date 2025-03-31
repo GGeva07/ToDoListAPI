@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.Threading;
 using ToDoList.Context;
 using ToDoList.Interfaces;
 using ToDoList.Models;
@@ -14,40 +17,115 @@ namespace ToDoList.Services
             this.context = context;
         }
 
-        public string Delete(int id)
+        public async Task<List<Tareas>> Get()
         {
-            var registro = context.Tareas.Find(id);
-            context.Tareas.Remove(registro);
-            context.SaveChanges();
-            return "Regsitro Eliminado";
+            try
+            {
+                var tarea = context.Tareas.ToListAsync();
+                return await tarea;
+            }catch(Exception e)
+            {
+                Console.WriteLine($"Error {e.Message}");
+                return new List<Tareas>();
+            }
         }
 
-        public List<Tareas> Get()
+        public async Task<List<Tareas>> GetTareasByNombre(string Nombre)
         {
-
-            var data = context.Tareas.ToList();
-            return data;
+            try
+            {
+                var Tareas = context.Tareas.Where(t => t.Nombre == Nombre).ToListAsync();
+                return await Tareas;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Error {e.Message}");
+                return new List<Tareas>();
+            }
         }
 
-        public Tareas? GetTareasByNombre(string Nombre)
+        public async Task<List<Tareas>> GetTareasByIdUsuario(int id)
         {
-            var tarea1 = Get();
-            var tarea = tarea1.Find(tarea => tarea.Nombre == Nombre);
-            return tarea;
+            try
+            {
+                var tarea = context.Tareas.Where(t => t.idUsuario == id).ToListAsync();
+                return await tarea;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error {e.Message}");
+                return new List<Tareas>();
+            }
         }
 
-        public string Set(Tareas model)
+        public async Task<String> Post(int idUsuario, Tareas model)
         {
-            context.Tareas.Add(model);
-            context.SaveChanges();
-            return "Registro insertado";
+            try
+            {
+                var usuario = await context.Usuario
+                    .FirstOrDefaultAsync(u => u.id == idUsuario);
+
+                if (usuario == null)
+                {
+                    return "Usuario no encontrado";
+                }
+
+                model.idUsuario = idUsuario;
+                await context.Tareas.AddAsync(model);
+
+                await context.SaveChangesAsync();
+                return "Tarea creada";
+
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
         }
 
-        public string Update(Tareas model)
+
+        public async Task<String> Put(int id, int idUsuario, Tareas model)
         {
-            context.Entry(model).State = EntityState.Modified;
-            context.SaveChanges();
-            return "Registro Actualizados";
+            var tarea = await context.Tareas
+                .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
+
+            if (tarea == null)
+            {
+                return "Tarea no encontrada";
+            }
+
+            tarea.Nombre = model.Nombre;
+            tarea.Contenido = model.Contenido;
+            tarea.Estado = model.Estado;
+
+            await context.SaveChangesAsync();
+            return "Tarea editada";
+        }
+
+        public async Task<string> Delete(int id, int idUsuario)
+        {
+            try
+            {
+                var tareaEliminar = await context.Tareas
+                .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
+
+
+                if (tareaEliminar == null)
+                {
+                    return "Tarea a eliminar no encontrada!!";
+                }
+
+                context.Tareas.Remove(tareaEliminar);
+
+                await context.SaveChangesAsync();
+                return "Tarea eliminada";
+
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
         }
     }
 }

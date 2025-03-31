@@ -1,17 +1,58 @@
-nav{
+.navbar{
   width: auto;
   font-weight: bold;    
   height: 50px;
   background-color: cadetblue!important;
   color: antiquewhite;
-
+  box-shadow: 5px 5px 10px darkslategrey;
 }
 
-nav > a{
-    
+form{
+  margin-top: 20px;
+}
+
+.imgdiv{
+  margin-left: 20px;
+}
+
+nav > svg{
+  margin-right: 20px;
+  color: aliceblue;
 }
 
 body{
     background-color: rgb(141, 189, 190)!important;
 }
+.seccion_central{
+  margin-top: 10px;
+  margin-left: 20px;
+}
 
+.seccion_lateral_fija{
+  position: static;
+  background-color: rgba(84, 137, 158, 0.438);
+  height: 100dvh;
+}
+
+.btn{
+  margin-left: 100px;
+}
+
+.bi{
+  color: rgb(117, 127, 133);
+}
+
+.boton{
+  color: darkslategrey !important;
+  background-color: aliceblue !important;
+}
+
+.list-group-item{
+  margin-bottom:  5px;
+  border-radius: 10px;
+}
+
+.boton_modal{
+  background-color: rgb(62, 107, 124) !important;
+  color: aliceblue !important;
+}
