@@ -20,6 +20,7 @@ namespace ToDoList.GUI
             builder.Services.AddSqlServer<TodoListDBContext>(builder.Configuration.GetConnectionString("AppConnection"));
             builder.Services.AddScoped<IUsuario, UsuarioService>();
             builder.Services.AddScoped<ITareas, TareaService>();
+            builder.Services.AddScoped<ILogin, LoginService>();
 
             var app = builder.Build();
 

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BCrypt.Net;
 
 namespace ToDoList.Services
 {
@@ -26,14 +27,13 @@ namespace ToDoList.Services
             try
             {
                 var usuario = await context.Usuario
-                    .FirstOrDefaultAsync(u => u.Correo == email && u.Contrasenia == pass);
+                    .FirstOrDefaultAsync(u => u.Correo == email);
 
-                if (usuario != null)
-                {
-                    return new Usuario { Nombre = "", Apellido = "", Correo = email, Contrasenia = pass };
-                }
+                if (usuario == null || !VerificarContrasenia(pass, usuario.Contrasenia))
+                    return null;
 
-                return null;
+                return usuario;
+               
             }
             catch (Exception e)
             {
@@ -42,8 +42,16 @@ namespace ToDoList.Services
             }
         }
 
-        public async Task<string> GenerarToken(Usuario usuario)
-        {
+
+
+         public bool VerificarContrasenia(string contraseniaIngresada, string contrasenia)
+         {
+            return BCrypt.Net.BCrypt.Verify(contraseniaIngresada, contrasenia);
+         }
+
+
+         public async Task<string> GenerarToken(Usuario usuario)
+         {
             var codigo = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuracion["Jwt:Key"]));
             var credenciales = new SigningCredentials(codigo, SecurityAlgorithms.HmacSha256);
 
