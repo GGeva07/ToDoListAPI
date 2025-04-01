@@ -13,11 +13,12 @@ namespace ToDoList.Services
     public class UsuarioService : IUsuario
     {
         private readonly TodoListDBContext context;
+        private readonly ITarea service;
 
-
-        public UsuarioService(TodoListDBContext context)
+        public UsuarioService(TodoListDBContext context, ITarea service)
         {
             this.context = context;
+            this.service = service;
         }
 
         public async Task<List<Usuario>> Get()
@@ -37,7 +38,14 @@ namespace ToDoList.Services
         public async Task<string> Post(Usuario model)
         {
             try
-            {
+            {     
+                var usuario = context.Usuario.FirstOrDefault(u => u.correo == model.correo);
+
+                if (usuario != null)
+                {
+                    return("El usuario ya existe.");
+                }
+
                 await context.Usuario.AddAsync(model);
                 await context.SaveChangesAsync();
                 return "Registro insertado correctamente";
@@ -60,10 +68,9 @@ namespace ToDoList.Services
                     return "Usuario no encontrado";
                 }
 
-                // Actualizamos los valores del usuario
-                usuario.Nombre = model.Nombre;
-                usuario.Correo = model.Correo;
-                usuario.Contrasenia = model.Contrasenia;
+                usuario.usuarioNombre = model.usuarioNombre;
+                usuario.correo = model.correo;
+                usuario.contrasenia = model.contrasenia;
 
                 await context.SaveChangesAsync();
                 return "Registro actualizado correctamente";
@@ -86,11 +93,17 @@ namespace ToDoList.Services
                     return "Usuario no encontrado";
                 }
 
-                var tareasBorrar = await context.Tareas
-                    .Where(t => t.idUsuario == id)
-                    .ToListAsync();
+                var tareasBorrar = await context.Tarea.Where(t => t.idUsuario == id).ToListAsync();
 
-                context.Tareas.RemoveRange(tareasBorrar);
+                if (tareasBorrar != null)
+                {
+                    context.Tarea.RemoveRange(tareasBorrar);
+                }
+                else
+                {
+                    return "El usuario no tiene tareas registradas para borrar";
+                }
+
                 context.Usuario.Remove(usuario);
                 await context.SaveChangesAsync();
                 return "Usuario y tareas pertenecientes a este eliminados correctamente";

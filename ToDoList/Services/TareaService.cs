@@ -8,7 +8,7 @@ using ToDoList.Models;
 
 namespace ToDoList.Services
 {
-    public class TareaService : ITareas
+    public class TareaService : ITarea
     {
         private readonly TodoListDBContext context;
 
@@ -17,48 +17,49 @@ namespace ToDoList.Services
             this.context = context;
         }
 
-        public async Task<List<Tareas>> Get()
+        public async Task<List<Tarea>> Get()
         {
             try
             {
-                var tarea = context.Tareas.ToListAsync();
+                var tarea = context.Tarea.ToListAsync();
                 return await tarea;
             }catch(Exception e)
             {
                 Console.WriteLine($"Error {e.Message}");
-                return new List<Tareas>();
+                return new List<Tarea>();
             }
         }
 
-        public async Task<List<Tareas>> GetTareasByNombre(string Nombre)
+        public async Task<List<Tarea>> GetTareasByNombre(string Nombre)
         {
             try
             {
-                var Tareas = context.Tareas.Where(t => t.Nombre == Nombre).ToListAsync();
+                var Tareas = context.Tarea.Where(t => t.Nombre == Nombre).ToListAsync();
                 return await Tareas;
             }
             catch(Exception e)
             {
                 Console.WriteLine($"Error {e.Message}");
-                return new List<Tareas>();
+                return new List<Tarea>();
             }
         }
 
-        public async Task<List<Tareas>> GetTareasByIdUsuario(int id)
+        public async Task<List<Tarea>> GetTareasByIdUsuario(int id)
         {
             try
             {
-                var tarea = context.Tareas.Where(t => t.idUsuario == id).ToListAsync();
+
+                var tarea = context.Tarea.Where(t => t.idUsuario == id).ToListAsync();
                 return await tarea;
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error {e.Message}");
-                return new List<Tareas>();
+                return new List<Tarea>();
             }
         }
 
-        public async Task<String> Post(int idUsuario, Tareas model)
+        public async Task<String> Post(int idUsuario, Tarea model)
         {
             try
             {
@@ -71,7 +72,7 @@ namespace ToDoList.Services
                 }
 
                 model.idUsuario = idUsuario;
-                await context.Tareas.AddAsync(model);
+                await context.Tarea.AddAsync(model);
 
                 await context.SaveChangesAsync();
                 return "Tarea creada";
@@ -85,9 +86,9 @@ namespace ToDoList.Services
         }
 
 
-        public async Task<String> Put(int id, int idUsuario, Tareas model)
+        public async Task<String> Put(int id, int idUsuario, Tarea model)
         {
-            var tarea = await context.Tareas
+            var tarea = await context.Tarea
                 .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
 
             if (tarea == null)
@@ -107,7 +108,7 @@ namespace ToDoList.Services
         {
             try
             {
-                var tareaEliminar = await context.Tareas
+                var tareaEliminar = await context.Tarea
                 .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
 
 
@@ -116,7 +117,7 @@ namespace ToDoList.Services
                     return "Tarea a eliminar no encontrada!!";
                 }
 
-                context.Tareas.Remove(tareaEliminar);
+                context.Tarea.Remove(tareaEliminar);
 
                 await context.SaveChangesAsync();
                 return "Tarea eliminada";

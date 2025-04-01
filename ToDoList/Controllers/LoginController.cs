@@ -17,13 +17,24 @@ namespace ToDoList.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] Login login)
         {
-            var usuario = await service.ValidarUsuario(login.Email , login.Pass);
+            var usuario = await service.ValidarUsuario(login.Correo , login.Contrasenia);
             
             if(usuario == null)
                 return Unauthorized(new { message = "Credenciales incorrectas" });
 
-            var token = service.GenerarToken(usuario);
-            return Ok(new { token });
+            return  Ok(new
+            {
+                message = "Login exitoso",
+                Usuario = new
+                {
+                    id = usuario.id,
+                    usuarioNombre = usuario.usuarioNombre,
+                    correo = usuario.correo
+                }
+            });
         }
+
+        
+
     }
 }

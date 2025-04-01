@@ -8,16 +8,12 @@ namespace ToDoList.Models
         public int id { get; set; }
 
         [Required]
-        public string Nombre { get; set; }
+        public string usuarioNombre { get; set; }
 
         [Required]
-        public string Apellido { get; set; }
+        public string correo { get; set; }
 
         [Required]
-        public string Correo { get; set; }
-
-
-        [Required]
-        public string Contrasenia { get; set; }
+        public string contrasenia { get; set; }
     }
 }

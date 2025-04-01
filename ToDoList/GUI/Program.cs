@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 using ToDoList.Context;
 using ToDoList.Interfaces;
 using ToDoList.Services;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ToDoList.GUI
 {
@@ -19,8 +23,31 @@ namespace ToDoList.GUI
             builder.Services.AddSwaggerGen();
             builder.Services.AddSqlServer<TodoListDBContext>(builder.Configuration.GetConnectionString("AppConnection"));
             builder.Services.AddScoped<IUsuario, UsuarioService>();
-            builder.Services.AddScoped<ITareas, TareaService>();
+            builder.Services.AddScoped<ITarea, TareaService>();
             builder.Services.AddScoped<ILogin, LoginService>();
+
+            var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
+
+            
+
+            
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -33,12 +60,19 @@ namespace ToDoList.GUI
 
             app.UseHttpsRedirection();
 
+            app.UseCors(builder =>
+            builder.WithOrigins("http://127.0.0.1:5500")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
             app.UseAuthorization();
 
 
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 }

@@ -37,12 +37,17 @@ namespace ToDoList.Controllers
             }
         }
 
-        [HttpPost("Set-Usuario")]
+        [HttpPost("Post-Usuario")]
         public async Task<ActionResult<string>> PostUsuario([FromBody] Usuario model)
         {
             try
             {
                 var result = await service.Post(model);
+
+                if(result == null)
+                {
+                    return BadRequest("El usuario ya existe ingresa otro usuario");
+                }
                 return Ok(result);
             }
             catch (Exception e)
@@ -51,8 +56,7 @@ namespace ToDoList.Controllers
             }
         }
 
-        // Actualizar un usuario existente
-        [HttpPut("Update-Usuario/{id}")]
+        [HttpPut("Put-Usuario/{id}")]
         public async Task<ActionResult<string>> PutUsuario(int id, [FromBody] Usuario model)
         {
             try
