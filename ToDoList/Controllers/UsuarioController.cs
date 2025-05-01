@@ -91,5 +91,23 @@ namespace ToDoList.Controllers
                 return StatusCode(500, $"Error al eliminar usuario: {e.Message}"); 
             }
         }
+
+        [HttpGet("GetUsuarioById{id}")]
+
+        public async Task<ActionResult<string>> GetUsuarioById(int id)
+        {
+            try
+            {
+                var result = await service.GetUsuarioById(id);
+                if(result == null)
+                {
+                    return NotFound(result);
+                }
+                return Ok(result);
+            }catch(Exception e)
+            {
+                return StatusCode(500, $"Error al encontrar el usuario por el id: {e.Message}");
+            }
+        }
     }
 }

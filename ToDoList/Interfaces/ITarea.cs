@@ -7,8 +7,9 @@ namespace ToDoList.Interfaces
         public Task<List<Tarea>> Get();
         public Task<List<Tarea>> GetTareasByNombre(string Nombre);
         public Task<List<Tarea>> GetTareasByIdUsuario(int idUsuario);
-        public Task<String> Post(int idUsuario, Tarea tarea);
-        public Task<string> Put(int id, int idUsuario, Tarea tarea);
-        public Task<string> Delete(int id, int idUsuario);
+        public Task<Object> GetTareaById(int id);
+        public Task<Object> Post(Tarea tarea);
+        public Task<Object> Put(Tarea tarea);
+        public Task<Object> Delete(int id, int idUsuario);
     }
 }

@@ -30,6 +30,23 @@ namespace ToDoList.Controllers
 
         }
 
+        [HttpGet("Get-TareaById/{id}")]
+        public async Task<IActionResult> GetTareaById(int id)
+        {
+            try
+            {
+                var tarea = await service.GetTareaById(id);
+                if (tarea == null)
+                    return NotFound(new { message = "Tarea no encontrada" });
+
+                return Ok(tarea);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { error = $"Error obteniendo la tarea: {e.Message}" });
+            }
+        }
+
         [HttpGet("Get-Tareas-by-Usuario/{idUsuario}")]
         public async Task<IActionResult> GetTareasByIdUsuario(int idUsuario)
         {
@@ -57,43 +74,49 @@ namespace ToDoList.Controllers
             }
         }
 
-        [HttpPost("Set-Tarea")]
-        public async Task<IActionResult> PostTarea(int idUsuario, [FromBody] Tarea model)
+        [HttpPost("Post-Tarea")]
+        [HttpPost]
+        public async Task<IActionResult> PostTarea([FromBody] Tarea model)
         {
             try
             {
                 if (model == null)
                 {
-                    return BadRequest("Los datos de la tarea no son validos");
+                    return BadRequest(new { message = "Los datos de la tarea no son válidos" });
                 }
 
-                var resultado = await service.Post(idUsuario, model);
-                return resultado == "Tarea creada" ? Ok(resultado) : BadRequest(resultado);
-            }catch(Exception e)
-            {
-                return StatusCode(500, $"Error creando la tarea {e.Message}");
+                var resultado = await service.Post(model);
+                return Ok(resultado);
             }
-
+            catch (Exception e)
+            {
+                return StatusCode(500, new { error = $"Error creando la tarea: {e.Message}" });
+            }
         }
 
-        [HttpPut("Update-Tarea/{id}/{idUsuario}")]
+
+        [HttpPut("Put-Tarea/{id}/{idUsuario}")]
         public async Task<IActionResult> PutTarea(int id, int idUsuario, [FromBody] Tarea model)
         {
             try
             {
                 if (model == null)
                 {
-                    return BadRequest("Los datos de la tarea no son validos");
+                    return BadRequest(new { message = "Los datos de la tarea no son válidos" });
                 }
 
-                var resultado = await service.Put(id, idUsuario, model);
-                return resultado == "Tarea editada" ? Ok(resultado) : NotFound(resultado);
-            }catch(Exception e)
-            {
-                return StatusCode(500, $"Error editando la tarea {e.Message}");
-            }
+                model.id = id;
+                model.idUsuario = idUsuario;
 
+                var resultado = await service.Put(model);
+                return Ok(resultado);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { error = $"Error editando la tarea: {e.Message}" });
+            }
         }
+
 
         [HttpDelete("Delete-Tarea/{id}/{idUsuario}")]
         public async Task<IActionResult> DeleteTarea(int id, int idUsuario)

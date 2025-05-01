@@ -30,6 +30,23 @@ namespace ToDoList.Services
             }
         }
 
+        public async Task<Object> GetTareaById(int id)
+        {
+            try
+            {
+                var tarea = await context.Tarea.FirstOrDefaultAsync(t => t.id == id);
+                if (tarea == null)
+                {
+                    return new { message = "Tarea no encontrada" };
+                }
+                return tarea;
+            }
+            catch (Exception e)
+            {
+                return new { error = $"Error: {e.Message}" };
+            }
+        }
+
         public async Task<List<Tarea>> GetTareasByNombre(string Nombre)
         {
             try
@@ -59,41 +76,40 @@ namespace ToDoList.Services
             }
         }
 
-        public async Task<String> Post(int idUsuario, Tarea model)
+        public async Task<object> Post(Tarea model)
         {
             try
             {
                 var usuario = await context.Usuario
-                    .FirstOrDefaultAsync(u => u.id == idUsuario);
+                    .FirstOrDefaultAsync(u => u.id == model.idUsuario);
 
                 if (usuario == null)
                 {
-                    return "Usuario no encontrado";
+                    return new { message = "Usuario no encontrado" };
                 }
 
-                model.idUsuario = idUsuario;
+                model.idUsuario = model.idUsuario;
                 await context.Tarea.AddAsync(model);
-
                 await context.SaveChangesAsync();
-                return "Tarea creada";
 
-
+                return new { message = "Tarea creada", tarea = model }; 
             }
             catch (Exception e)
             {
-                return $"Error: {e.Message}";
+                return new { error = $"Error: {e.Message}" }; 
             }
         }
 
 
-        public async Task<String> Put(int id, int idUsuario, Tarea model)
+
+        public async Task<object> Put(Tarea model)
         {
             var tarea = await context.Tarea
-                .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
+                .FirstOrDefaultAsync(t => t.id == model.id && t.idUsuario == model.idUsuario);
 
             if (tarea == null)
             {
-                return "Tarea no encontrada";
+                return new { message = "Tarea no encontrada" };
             }
 
             tarea.Nombre = model.Nombre;
@@ -101,31 +117,30 @@ namespace ToDoList.Services
             tarea.Estado = model.Estado;
 
             await context.SaveChangesAsync();
-            return "Tarea editada";
+            return new { message = "Tarea editada", tarea };
         }
 
-        public async Task<string> Delete(int id, int idUsuario)
+        public async Task<object> Delete(int id)
         {
             try
             {
                 var tareaEliminar = await context.Tarea
-                .FirstOrDefaultAsync(t => t.id == id && t.idUsuario == idUsuario);
+                    .FirstOrDefaultAsync(t => t.id == id);
+                var tarea = await context.Tarea.FirstOrDefaultAsync(T => T.idUsuario == tareaEliminar.idUsuario);
 
-
-                if (tareaEliminar == null)
+                if (tareaEliminar == null )
                 {
-                    return "Tarea a eliminar no encontrada!!";
+                    return new { message = "Tarea a eliminar no encontrada" };
                 }
 
-                context.Tarea.Remove(tareaEliminar);
-
+                context.Tarea.Remove(tarea);
                 await context.SaveChangesAsync();
-                return "Tarea eliminada";
 
+                return new { message = "Tarea eliminada", tarea = tareaEliminar };
             }
             catch (Exception e)
             {
-                return $"Error: {e.Message}";
+                return new { error = $"Error: {e.Message}" };
             }
         }
     }

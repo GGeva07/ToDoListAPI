@@ -13,12 +13,10 @@ namespace ToDoList.Services
     public class UsuarioService : IUsuario
     {
         private readonly TodoListDBContext context;
-        private readonly ITarea service;
 
-        public UsuarioService(TodoListDBContext context, ITarea service)
+        public UsuarioService(TodoListDBContext context)
         {
             this.context = context;
-            this.service = service;
         }
 
         public async Task<List<Usuario>> Get()
@@ -34,6 +32,25 @@ namespace ToDoList.Services
                 return new List<Usuario>();
             }
         }
+
+        public async Task<Usuario> GetUsuarioById(int id)
+        {
+            try
+            {
+                var usuario = await context.Usuario.FirstOrDefaultAsync(u => u.id == id);
+
+                if (usuario == null)
+                    return null;
+
+                return usuario;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error {e.Message}");
+                return null;
+            }
+        }
+
 
         public async Task<string> Post(Usuario model)
         {

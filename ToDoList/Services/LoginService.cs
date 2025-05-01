@@ -14,20 +14,56 @@ namespace ToDoList.Services
     public class LoginService : ILogin
     {
         private readonly TodoListDBContext context;
-        private readonly IConfiguration configuracion;
-
-        public LoginService(TodoListDBContext context, IConfiguration config)
+        public LoginService(TodoListDBContext context)
         {
             this.context = context;
-            this.configuracion = config;
         }
+
+        public async Task<Usuario> RegistrarUsuario(string usuarioNombre, string correo, string contrasenia)
+        {
+            try
+            {
+                var user = await context.Usuario.FirstOrDefaultAsync(u => u.usuarioNombre == usuarioNombre && u.correo == correo);
+
+                if (user != null)
+                {
+                    Console.WriteLine("Usuario o Correo en uso");
+                    return null;
+                }
+
+                var usuario = new Usuario
+                {
+                    usuarioNombre = usuarioNombre,
+                    correo = correo,
+                    contrasenia = contrasenia
+                };
+
+                await context.Usuario.AddAsync(usuario);
+                await context.SaveChangesAsync();
+
+                return usuario;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error {e.Message}");
+                return null;
+            }
+        }
+
         public async Task<Usuario?> ValidarUsuario(string correo, string contrasenia)
         {
             try
             {
-                return await context.Usuario
-               .FirstOrDefaultAsync(u => u.correo == correo && u.contrasenia == contrasenia);
-            }catch(Exception e)
+                var usuario = await context.Usuario.FirstOrDefaultAsync(u => u.correo == correo && u.contrasenia == contrasenia);
+                if(usuario == null)
+                {
+                    Console.WriteLine("Usuario no existente");
+                    return null;
+                }
+
+                return usuario;
+            }
+            catch (Exception e)
             {
                 Console.WriteLine($"Error {e.Message}");
                 return null;

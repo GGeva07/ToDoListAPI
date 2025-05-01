@@ -1,65 +1,92 @@
+// Login de usuarios
 document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("FormularioAccesoUsuarios").addEventListener("submit", async function (event) {
-        event.preventDefault();
+    const formAccesoUsuarios = document.getElementById("FormularioAccesoUsuarios");
 
-        const correo = document.getElementById("email").value;
-        const contrasenia = document.getElementById("password").value;
+    if (formAccesoUsuarios) {
+        formAccesoUsuarios.addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-        const response = await fetch("https://localhost:5005/Login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ correo, contrasenia })
-        });
+            const correo = document.getElementById("email").value;
+            const contrasenia = document.getElementById("password").value;
 
-        const data = await response.json();
-        if (response.ok) {
+            try {
+                const response = await fetch("https://localhost:5005/Login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ correo, contrasenia })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta completa de la API:", data); 
+                
+                    if (data.usuario && typeof data.usuario.id !== "undefined") { 
+                        localStorage.setItem("idUsuario", data.usuario.id);
+                        console.log("ID de usuario guardado:", data.usuario.id);
+                    } else {
+                        console.error("No se recibió un ID de usuario. Estructura incorrecta:", data);
+                    }
+                })
+                .catch(error => console.error("Error en el fetch:", error));
+                
+                alert("Login exitoso!");
 
-            alert("Login exitoso!");
-            console.log("Token:", data.token);
+                setTimeout(() => {
+                    window.location.href = "../HtmlLayout/PrincipalLayout/PaginaPrincipalUser.html";
+                }, 800);
 
-            setTimeout(() =>{
-                window.location.href = "../HtmlLayout/PrincipalLayout/PaginaPrincipalUser.html";
-            }, 800);
-        } else {
-            alert("Error: " + data.message);
-        }
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("LogearUsuario").addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const usuarioNombre = document.getElementById("inputNombre").value;
-        const correo = document.getElementById("inputCorreo").value;
-        const contrasenia = document.getElementById("inputPass").value;
-
-        try {
-            const response = await fetch("https://localhost:5005/api/Usuario/Post-Usuario", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ usuarioNombre, correo, contrasenia })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            } catch (error) {
+                console.error("Error en el fetch:", error);
+                alert("Error en la solicitud: " + error.message);
             }
+        });
+    }
 
-            const data = await response.json();
-                        alert("Login exitoso!");
-            console.log("Token:", data.token);
-            console.log("Respuesta de la API:", data);
+    // Registro de usuarios (Sign-In)
+    const formLogearUsuario = document.getElementById("LogearUsuario");
+    if (formLogearUsuario) {
+        formLogearUsuario.addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-            alert("Registro exitoso!");
-            window.location.href = "../HtmlLayout/LayoutInicioSesion.html";
+            const usuarioNombre = document.getElementById("inputNombre").value;
+            const correo = document.getElementById("inputCorreo").value;
+            const contrasenia = document.getElementById("inputPass").value;
 
-        } catch (error) {
-            console.error("Error en el fetch:", error);
-            alert("Error en la solicitud: " + error.message);
-        }
-    });
+            try {
+                const response = await fetch("https://localhost:5005/Sing-In", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ usuarioNombre, correo, contrasenia })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert("Error: " + errorData.message);
+                    return;
+                }
+
+                
+                alert("Registro exitoso!");
+                setTimeout(() => {
+                    window.location.href = "../HtmlLayout/LayoutInicioSesion.html";
+                }, 800);
+                
+                const data = await response.json();
+
+                if (data.Usuario && data.Usuario.id) {
+                    localStorage.setItem("idUsuario", data.Usuario.id);
+                    console.log("ID de usuario guardado:", data.Usuario.id);
+                } else {
+                    console.error("No se recibio un ID de usuario");
+                    return;
+                }
+
+
+            } catch (error) {
+                console.error("Error en el fetch:", error);
+                alert("Error en la solicitud: " + error.message);
+            }
+        });
+    }
 });
